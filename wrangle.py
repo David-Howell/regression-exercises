@@ -245,7 +245,8 @@ def wrangle_zillow():
 
 #**************************************************SCALE**********************************************************
 
-def scale_zillow(train, validate, test):
+
+def scale_zillow(train, validate, test, return_scaler=False):
     '''
     This is a Docstring: If you\'re reading this, I still need to write more );
     '''
@@ -258,20 +259,24 @@ def scale_zillow(train, validate, test):
     # sort the columns for pairity
     cols = sorted(cols)
     
-    scaler_quant = QuantileTransformer(output_distribution= 'normal')
+    scaler_minmax = MinMaxScaler()
     
-    quant_cols = []
+    minmax_cols = []
 
     for col in train[cols]:
-        quant_cols.append(f'{col}_quant')
+        mimax_cols.append(f'{col}_minmax')
     
     
-    train[quant_cols] = scaler_quant.fit_transform(train[cols])
+    train[minmax_cols] = scaler_minmax.fit_transform(train[cols])
     
-    validate[quant_cols] = scaler_quant.transform(validate[cols])
+    validate[minmax_cols] = scaler_minmax.transform(validate[cols])
     
-    test[quant_cols] = scaler_quant.transform(test[cols])
+    test[minmax_cols] = scaler_minmax.transform(test[cols])
     
     train, validate, test = train[sorted(train)], validate[sorted(validate)], test[sorted(test)]
     
-    return train, validate, test
+    if return_scaler:
+        return train, validate, test, scaler_minmax
+    else:
+        return train, validate, test
+    
