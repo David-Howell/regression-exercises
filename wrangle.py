@@ -227,9 +227,9 @@ def prepare_zillow(df):
     validate[['yr_built']] = imputer.transform(validate[['yr_built']])
     test[['yr_built']] = imputer.transform(test[['yr_built']])       
 
-    train.yr_built = train.yr_built.astype(object)
-    validate.yr_built = validate.yr_built.astype(object)
-    test.yr_built = test.yr_built.astype(object)
+    train.yr_built = train.yr_built.astype(int).astype(object)
+    validate.yr_built = validate.yr_built.astype(int).astype(object)
+    test.yr_built = test.yr_built.astype(int).astype(object)
 
     return train, validate, test    
 
@@ -240,5 +240,38 @@ def prepare_zillow(df):
 def wrangle_zillow():
     '''Acquire and prepare data from Zillow database for explore'''
     train, validate, test = prepare_zillow(get_zillow())
+    
+    return train, validate, test
+
+#**************************************************SCALE**********************************************************
+
+def scale_zillow(train, validate, test):
+    '''
+    This is a Docstring: If you\'re reading this, I still need to write more );
+    '''
+    
+    # set the coloumns for scaling
+    # yr_built and fips are objects and don't need to be scaled
+    # tax_appraisal is the target and doesn't need to be scaled
+    cols = ['beds', 'baths', 'sqft', 'taxes']
+
+    # sort the columns for pairity
+    cols = sorted(cols)
+    
+    scaler_quant = QuantileTransformer(output_distribution= 'normal')
+    
+    quant_cols = []
+
+    for col in train[cols]:
+        quant_cols.append(f'{col}_quant')
+    
+    
+    train[quant_cols] = scaler_quant.fit_transform(train[cols])
+    
+    validate[quant_cols] = scaler_quant.transform(validate[cols])
+    
+    test[quant_cols] = scaler_quant.transform(test[cols])
+    
+    train, validate, test = train[sorted(train)], validate[sorted(validate)], test[sorted(test)]
     
     return train, validate, test
