@@ -78,3 +78,26 @@ def split_data(df, strat_by, rand_st=123):
 
 
     return train, validate, test
+
+
+def split_data_continuous(df, rand_st=123):
+    '''
+    Takes in: a pd.DataFrame()
+          and a column to stratify by  ;dtype(str)
+          and a random state           ;if no random state is specifed defaults to [123]
+          
+      return: train, validate, test    ;subset dataframes
+    '''
+    from sklearn.model_selection import train_test_split
+    train, test = train_test_split(df, test_size=.2, 
+                               random_state=rand_st)
+    train, validate = train_test_split(train, test_size=.25, 
+                 random_state=rand_st)
+    print(f'Prepared df: {df.shape}')
+    print()
+    print(f'Train: {train.shape}')
+    print(f'Validate: {validate.shape}')
+    print(f'Test: {test.shape}')
+
+
+    return train, validate, test
