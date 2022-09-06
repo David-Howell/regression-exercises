@@ -212,6 +212,10 @@ def prepare_zillow(df):
 
     # converting column datatypes
     df.fips = df.fips.astype(object)
+    df.fips = df.fips.map({6037.0: 'Los Angeles County',
+                6059.0: 'Orange County',
+                6111.0: 'Ventura County'
+               })
     df.yr_built = df.yr_built.astype(object)    
 
     # train/validate/test split
